@@ -17,7 +17,53 @@ This module contains a variety of helpful resources, including:
 
 Get started at [spinningup.openai.com](https://spinningup.openai.com)!
 
+## Install
 
+**spinningup**
+```shell
+# update pip
+conda create -n spinningup_py36 python=3.6
+conda activate spinningup_py36
+sudo apt-get update && sudo apt-get install libopenmpi-dev
+cd spinningup
+
+pip install --upgrade pip
+pip install -e .
+
+# install opencv
+conda install -c conda-forge opencv
+pip install opencv-python==4.5.1.48
+pip install -e .
+```
+
+
+**install mujoco_py**
+```shell
+wget https://github.com/google-deepmind/mujoco/releases/download/3.3.2/mujoco-3.3.2-linux-x86_64.tar.gz
+tar -xzvf mujoco-3.3.2-linux-x86_64.tar.gz
+
+vim ~/.bashrc
+# export MUJOCO_PY_MUJOCO_PATH=/home/sukui/01.software/mujoco210
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sukui/01.software/mujoco210/bin
+
+source ~/.basrch
+
+cd ~/01.software/mujoco210/bin/
+./simulate ../model/humanoid.xml
+
+git clone https://github.com/openai/mujoco-py.git
+cd mujoco-py
+pip3 install -U 'mujoco-py<2.2,>=2.1'
+pip3 install -r requirements.txt
+pip3 install -r requirements.dev.txt
+pip install "cython<3"
+python3 setup.py install
+
+
+# test
+cd spinningup
+python -m spinup.run ppo --env Walker2d-v2 --exp_name walker
+```
 Citing Spinning Up
 ------------------
 
