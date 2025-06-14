@@ -71,7 +71,7 @@ class PPOBuffer:
     def get(self):
         """
         Call this at the end of an epoch to get all of the data from
-        the buffer, with advantages appropriately normalized (shifted to have
+        the buffer, wth advantages appiropriately normalized (shifted to have
         mean zero and std one). Also, resets some pointers in the buffer.
         """
         assert self.ptr == self.max_size    # buffer has to be full before you can get
@@ -228,7 +228,7 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
         obs, act, adv, logp_old = data['obs'], data['act'], data['adv'], data['logp']
 
         # Policy loss
-        pi, logp = ac.pi(obs, act)
+        pi, logp = ac.pi(obs, act) # logp, 当前策略对于act的概率
         ratio = torch.exp(logp - logp_old)
         clip_adv = torch.clamp(ratio, 1-clip_ratio, 1+clip_ratio) * adv
         loss_pi = -(torch.min(ratio * adv, clip_adv)).mean()
@@ -297,6 +297,7 @@ def ppo(env_fn, actor_critic=core.MLPActorCritic, ac_kwargs=dict(), seed=0,
     # Main loop: collect experience in env and update/log each epoch
     for epoch in range(epochs):
         for t in range(local_steps_per_epoch):
+            env.render() 
             a, v, logp = ac.step(torch.as_tensor(o, dtype=torch.float32))
 
             next_o, r, d, _ = env.step(a)
@@ -361,7 +362,7 @@ if __name__ == '__main__':
     parser.add_argument('--l', type=int, default=2)
     parser.add_argument('--gamma', type=float, default=0.99)
     parser.add_argument('--seed', '-s', type=int, default=0)
-    parser.add_argument('--cpu', type=int, default=4)
+    parser.add_argument('--cpu', type=int, default=1)
     parser.add_argument('--steps', type=int, default=4000)
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--exp_name', type=str, default='ppo')
